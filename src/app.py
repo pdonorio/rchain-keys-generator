@@ -25,6 +25,9 @@ def output_reader(proc):
                 proc.terminate()
                 print('.' * MAX_LINE_COLS)
                 print("\nCompleted\n")
+        else:
+            # show fast lines progress to human eye
+            time.sleep(0.3)
 
 
 def proc_wait(proc):
@@ -64,6 +67,7 @@ def choose_data_dir(data_dir):
     else:
         remove_existing_data(data_dir)
     return data_dir
+
 
 def build_command(data_dir, node_bin=NODE_BINARY):
     return [
