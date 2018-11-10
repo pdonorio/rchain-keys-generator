@@ -56,16 +56,16 @@ def remove_existing_data(dir):
         shutil.rmtree(dir)
 
 
-def build_command(node_bin=None, data_dir=None):
-
-    if node_bin is None:
-        node_bin = NODE_BINARY
-
+def choose_data_dir(data_dir):
     if data_dir is None:
         from tempfile import TemporaryDirectory
         data_dir = TemporaryDirectory(prefix='rchain_').name
         print("Temporary dir: ", data_dir)
+    else:
+        remove_existing_data(data_dir)
+    return data_dir
 
+def build_command(data_dir, node_bin=NODE_BINARY):
     return [
         node_bin, 'run', '--standalone',
         '--num-validators', '1',
@@ -89,15 +89,17 @@ def run_all_threads(functions, args):
 
 def main(data_dir=None):
 
-    if data_dir is not None:
-        remove_existing_data(data_dir)
-    proc = run_process(build_command(data_dir=data_dir))
+    current_data_dir = choose_data_dir(data_dir)
+    proc = run_process(build_command(current_data_dir))
     print("RNode launched.\n")
 
     args = (proc,)
     functions = [output_reader, proc_wait]
     run_all_threads(functions, args)
     make_sure_process_is_closed(*args)
+
+    # current_data_dir + /genesis/*.sk
+    pass
 
 
 if __name__ == '__main__':
