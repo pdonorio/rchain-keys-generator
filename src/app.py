@@ -8,7 +8,6 @@ import threading
 SECONDS_TO_CHECK_PROCESS = 30
 MAX_LINE_COLS = 79
 NODE_BINARY = 'rnode'
-DATA_DIR = '/tmp/rnode_validator_keys'
 
 
 def output_reader(proc):
@@ -57,7 +56,16 @@ def remove_existing_data(dir):
         shutil.rmtree(dir)
 
 
-def build_command(node_bin, data_dir):
+def build_command(node_bin=None, data_dir=None):
+
+    if node_bin is None:
+        node_bin = NODE_BINARY
+
+    if data_dir is None:
+        from tempfile import TemporaryDirectory
+        data_dir = TemporaryDirectory(prefix='rchain_').name
+        print("Temporary dir: ", data_dir)
+
     return [
         node_bin, 'run', '--standalone',
         '--num-validators', '1',
@@ -79,10 +87,13 @@ def run_all_threads(functions, args):
         thread.join()
 
 
-def main():
-    remove_existing_data(DATA_DIR)
-    proc = run_process(build_command(NODE_BINARY, DATA_DIR))
+def main(data_dir=None):
+
+    if data_dir is not None:
+        remove_existing_data(data_dir)
+    proc = run_process(build_command(data_dir=data_dir))
     print("RNode launched.\n")
+
     args = (proc,)
     functions = [output_reader, proc_wait]
     run_all_threads(functions, args)
@@ -90,4 +101,5 @@ def main():
 
 
 if __name__ == '__main__':
+    # main(data_dir='/tmp/rnode_validator_keys')
     main()
