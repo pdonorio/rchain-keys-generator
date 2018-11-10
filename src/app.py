@@ -1,8 +1,11 @@
 
-# import time
+import os
+import time
+import shutil
 import subprocess
 import threading
 
+NODE_BINARY = 'rnode'
 DATA_DIR = '/tmp/rnode_validator_keys'
 
 
@@ -16,28 +19,55 @@ def output_reader(proc):
                 print("FINISHED!")
 
 
+def proc_wait(proc):
+    while True:
+        still_running = proc.poll() is None
+        if still_running:
+            print("Node running:", still_running)
+            time.sleep(1)
+        else:
+            break
+
+
 def make_sure_process_is_closed(proc):
     proc.terminate()
     try:
         proc.wait(timeout=0.2)
-        print('== subprocess exited with rc =', proc.returncode)
+        print('Process return code: ', proc.returncode)
     except subprocess.TimeoutExpired:
-        print('subprocess did not terminate in time')
+        print('Process did not terminate in time')
+
+
+def remove_existing_data(dir):
+    if os.path.exists(dir) and os.path.isdir(dir):
+        shutil.rmtree(dir)
+
+
+def build_command(node_bin, data_dir):
+    return [
+        node_bin, 'run', '--standalone',
+        '--num-validators', '1',
+        '--data_dir', data_dir,
+    ]
+
+
+def run_process(command):
+    return subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+
+def run_all_threads(args):
+    t1 = threading.Thread(target=output_reader, args=args)
+    t2 = threading.Thread(target=proc_wait, args=args)
+    t1.start() or t2.start()
+    t1.join() or t2.join()
 
 
 def main():
-    command = [
-        'rnode', 'run',
-        '--standalone',
-        '--num-validators', '1',
-        '--data_dir', DATA_DIR,
-    ]
-    proc = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-
-    # TODO: add second thread to check proc status and warn every 30s
-    t = threading.Thread(target=output_reader, args=(proc,))
-    t.start()
-    t.join()
+    remove_existing_data(DATA_DIR)
+    proc = run_process(build_command(NODE_BINARY, DATA_DIR))
+    args = (proc,)
+    run_all_threads(args)
+    make_sure_process_is_closed(*args)
 
 
 if __name__ == '__main__':
