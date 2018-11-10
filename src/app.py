@@ -5,6 +5,7 @@ import shutil
 import subprocess
 import threading
 
+SECONDS_TO_CHECK_PROCESS = 30
 MAX_LINE_COLS = 79
 NODE_BINARY = 'rnode'
 DATA_DIR = '/tmp/rnode_validator_keys'
@@ -33,8 +34,10 @@ def proc_wait(proc):
         seconds += 1
         if proc.poll() is None:
             time.sleep(1)
-            if seconds % 30 == 0:
-                print("Warning: node still running after %s seconds" % seconds)
+            if seconds % SECONDS_TO_CHECK_PROCESS == 0:
+                output = "Warning: node still running after %s seconds" % seconds
+                output += (MAX_LINE_COLS - len(output)) * '.'
+                print(output)
         else:
             break
 
