@@ -1,4 +1,3 @@
-
 __version__ = '0.0.1'
 
 SECONDS_TO_CHECK_PROCESS = 30

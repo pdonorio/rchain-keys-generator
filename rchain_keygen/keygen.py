@@ -1,14 +1,9 @@
-
 import os
 import time
 import shutil
 import threading
 import subprocess
-from rchain_keygen import (
-    MAX_LINE_COLS,
-    SECONDS_TO_CHECK_PROCESS,
-    NODE_BINARY,
-)
+from rchain_keygen import MAX_LINE_COLS, SECONDS_TO_CHECK_PROCESS, NODE_BINARY
 
 CURRENT_WORKING_DIR = os.getcwd()
 
@@ -65,6 +60,7 @@ def remove_existing_data(dir):
 def choose_data_dir(data_dir=None):
     if data_dir is None:
         from tempfile import TemporaryDirectory
+
         data_dir = TemporaryDirectory(prefix='rchain_').name
         print("Temporary dir: ", data_dir)
     else:
@@ -75,9 +71,13 @@ def choose_data_dir(data_dir=None):
 def build_command(data_dir, node_bin=NODE_BINARY):
     print("Launching: %s.\n" % node_bin)
     return [
-        node_bin, 'run', '--standalone',
-        '--num-validators', '1',
-        '--data_dir', data_dir,
+        node_bin,
+        'run',
+        '--standalone',
+        '--num-validators',
+        '1',
+        '--data_dir',
+        data_dir,
     ]
 
 
@@ -97,6 +97,7 @@ def run_all_threads(functions, args):
 
 def find_keyfile(current_data_dir):
     from glob import glob
+
     path_to_look = os.path.join(current_data_dir, 'genesis', '*sk')
     files = glob(path_to_look)
     if len(files) != 1:

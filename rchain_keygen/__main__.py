@@ -1,4 +1,3 @@
-
 import rchain_keygen.keygen as app
 from rchain_keygen.arguments import get_arguments
 
@@ -14,8 +13,7 @@ def main():
     ######
     args = (proc,)
     app.run_all_threads(
-        functions=[app.end_proc_if_genesis, app.alert_for_longer_proc],
-        args=args
+        functions=[app.end_proc_if_genesis, app.alert_for_longer_proc], args=args
     )
     app.make_sure_process_is_closed(*args)
 
