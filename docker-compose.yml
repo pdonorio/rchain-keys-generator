@@ -8,5 +8,5 @@ services:
       args:
         image_tag: release-rnode-v${RNODE_RELEASE}
     volumes:
-      - ./src:/app
+      - .:/app
     working_dir: /app

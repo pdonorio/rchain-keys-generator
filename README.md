@@ -18,11 +18,22 @@ Current implemented workflow is:
 - rnode binary in `PATH`
 - python3.5+ installed (together with pip package system)
 
+## development
+
+Black formatter:
+```bash
+docker run --rm -it \
+    -v (pwd):/code -w /code \
+    unibeautify/black -S ./rchain_keygen
+```
 
 ## todo
 
 - [x] working first version based only on standard library
 - [x] parameter to output to file to be sourced
+- [x] setup as package
+- [x] formatter
+- [ ] publish manually on pypi
 - [ ] unittests
 - [ ] travis ci
-- [ ] automatic deploy
+- [ ] automatic pypi publishing from tags
