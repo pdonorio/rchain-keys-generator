@@ -2,28 +2,15 @@
 import os
 import time
 import shutil
-import argparse
 import threading
 import subprocess
+from rchain_keygen import (
+    MAX_LINE_COLS,
+    SECONDS_TO_CHECK_PROCESS,
+    NODE_BINARY,
+)
 
-SECONDS_TO_CHECK_PROCESS = 30
-MAX_LINE_COLS = 79
-NODE_BINARY = 'rnode'
 CURRENT_WORKING_DIR = os.getcwd()
-
-
-def get_arguments():
-    option = 'save-as-source'
-    parser = argparse.ArgumentParser(
-        description="RChain 'ed25519' signed keys generator")
-    parser.add_argument(
-        '--' + option,
-        dest='save_file', action='store_true',
-        help="enable saving variables for bash env sourcing"
-    )
-    # parser.add_argument('--no-' + option, dest='save_file', action='store_false')
-    parser.set_defaults(save_file=False)
-    return parser.parse_args()
 
 
 def end_proc_if_genesis(proc):
@@ -75,7 +62,7 @@ def remove_existing_data(dir):
         shutil.rmtree(dir)
 
 
-def choose_data_dir(data_dir):
+def choose_data_dir(data_dir=None):
     if data_dir is None:
         from tempfile import TemporaryDirectory
         data_dir = TemporaryDirectory(prefix='rchain_').name
@@ -146,23 +133,3 @@ def read_and_print_keys(keyfile, save_as_file=False):
         print("$ source %s" % filename)
         print("$ env | grep -i validator")
         print()
-
-
-def main(save_file=False, data_dir=None):
-
-    current_data_dir = choose_data_dir(data_dir)
-    proc = run_process(build_command(current_data_dir))
-
-    args = (proc,)
-    run_all_threads(functions=[end_proc_if_genesis, alert_for_longer_proc], args=args)
-    make_sure_process_is_closed(*args)
-
-    signed_key_path = copy_keyfile_to_working_dir(find_keyfile(current_data_dir))
-    remove_existing_data(current_data_dir)
-    read_and_print_keys(signed_key_path, save_as_file=save_file)
-
-
-if __name__ == '__main__':
-    args = get_arguments()
-    main(save_file=args.save_file)
-    # main(data_dir='/tmp/rnode_validator_keys')

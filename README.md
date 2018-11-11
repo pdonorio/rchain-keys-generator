@@ -23,6 +23,8 @@ Current implemented workflow is:
 
 - [x] working first version based only on standard library
 - [x] parameter to output to file to be sourced
+- [x] setup as package
+- [ ] publish manually on pypi
 - [ ] unittests
 - [ ] travis ci
-- [ ] automatic deploy
+- [ ] automatic pypi publishing from tags
