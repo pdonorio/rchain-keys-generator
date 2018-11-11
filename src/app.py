@@ -101,8 +101,20 @@ def find_keyfile(current_data_dir):
     return files.pop()
 
 
+def copy_keyfile_to_working_dir(original_keyfile_path):
+    current_working_dir = os.getcwd()
+    keyfile_name = os.path.basename(original_keyfile_path)
+    dest_path = os.path.join(current_working_dir, keyfile_name)
+    shutil.copy(original_keyfile_path, dest_path)
+    assert os.path.exists(dest_path)
+    assert os.path.isfile(dest_path)
+    print('Generated %s\n(in current dir %s)' % (keyfile_name, current_working_dir))
+    return dest_path
+
+
 def main(data_dir=None):
 
+    ############
     current_data_dir = choose_data_dir(data_dir)
     proc = run_process(build_command(current_data_dir))
 
@@ -110,8 +122,14 @@ def main(data_dir=None):
     run_all_threads(functions=[end_proc_if_genesis, alert_for_longer_proc], args=args)
     make_sure_process_is_closed(*args)
 
-    original_keyfile_path = find_keyfile(current_data_dir)
-    print(original_keyfile_path)
+    ############
+    signed_key_path = copy_keyfile_to_working_dir(find_keyfile(current_data_dir))
+    print("\n\nDEBUG: ", signed_key_path)
+
+    # TODO: pub key is name without .sk
+    pass
+    # TODO: priv key is content
+    pass
 
 
 if __name__ == '__main__':
