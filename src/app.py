@@ -112,9 +112,18 @@ def copy_keyfile_to_working_dir(original_keyfile_path):
     return dest_path
 
 
+def read_and_print_keys(keyfile):
+    print()
+    pub_key = os.path.basename(keyfile).replace('.sk', '')
+    print("VALIDATOR_PUBLIC_KEY=%s" % pub_key)
+    with open(keyfile) as keyfile_handler:
+        priv_key = keyfile_handler.read().strip()
+    print("VALIDATOR_PRIVATE_KEY=%s" % priv_key)
+    print()
+
+
 def main(data_dir=None):
 
-    ############
     current_data_dir = choose_data_dir(data_dir)
     proc = run_process(build_command(current_data_dir))
 
@@ -122,14 +131,9 @@ def main(data_dir=None):
     run_all_threads(functions=[end_proc_if_genesis, alert_for_longer_proc], args=args)
     make_sure_process_is_closed(*args)
 
-    ############
     signed_key_path = copy_keyfile_to_working_dir(find_keyfile(current_data_dir))
-    print("\n\nDEBUG: ", signed_key_path)
-
-    # TODO: pub key is name without .sk
-    pass
-    # TODO: priv key is content
-    pass
+    remove_existing_data(current_data_dir)
+    read_and_print_keys(signed_key_path)
 
 
 if __name__ == '__main__':
