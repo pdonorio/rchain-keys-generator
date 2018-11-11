@@ -58,8 +58,21 @@ VALIDATOR_PRIVATE_KEY=...
 
 ```
 
+### use inside official RChain node docker images
 
-## troubleshooting
+That would be as easy as:
+```bash
+docker run --rm -it --entrypoint /bin/bash rchain/rnode:release-rnode-v0.7
+# container shell
+export PATH=/opt/docker/bin:$PATH
+apt update && apt install -y python3-pip
+pip3 install rchain-keygen
+cd $HOME
+rchain-keygen
+```
+
+
+### troubleshooting
 
 1. missing `rnode` installation (or not being found in PATH) would end up execution with Exception:
 

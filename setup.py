@@ -31,7 +31,7 @@ setup(
     #         'file.yaml',
     #     ],
     # },
-    url='https://X.github.io/Y',
+    url='https://pdonorio.github.io/rchain-keys-generator',
     keywords=['rchain', 'blockchain', 'keypairs', 'generator'],
     classifiers=[
         'Programming Language :: Python',
