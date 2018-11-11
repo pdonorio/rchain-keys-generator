@@ -2,12 +2,28 @@
 import os
 import time
 import shutil
-import subprocess
+import argparse
 import threading
+import subprocess
 
 SECONDS_TO_CHECK_PROCESS = 30
 MAX_LINE_COLS = 79
 NODE_BINARY = 'rnode'
+CURRENT_WORKING_DIR = os.getcwd()
+
+
+def get_arguments():
+    option = 'save-as-source'
+    parser = argparse.ArgumentParser(
+        description="RChain 'ed25519' signed keys generator")
+    parser.add_argument(
+        '--' + option,
+        dest='save_file', action='store_true',
+        help="enable saving variables for bash env sourcing"
+    )
+    # parser.add_argument('--no-' + option, dest='save_file', action='store_false')
+    parser.set_defaults(save_file=False)
+    return parser.parse_args()
 
 
 def end_proc_if_genesis(proc):
@@ -102,27 +118,37 @@ def find_keyfile(current_data_dir):
 
 
 def copy_keyfile_to_working_dir(original_keyfile_path):
-    current_working_dir = os.getcwd()
     keyfile_name = os.path.basename(original_keyfile_path)
-    dest_path = os.path.join(current_working_dir, keyfile_name)
+    dest_path = os.path.join(CURRENT_WORKING_DIR, keyfile_name)
     shutil.copy(original_keyfile_path, dest_path)
     assert os.path.exists(dest_path)
     assert os.path.isfile(dest_path)
-    print('Generated %s\n(in current dir %s)' % (keyfile_name, current_working_dir))
+    print('Generated %s\n(in current dir %s)' % (keyfile_name, CURRENT_WORKING_DIR))
     return dest_path
 
 
-def read_and_print_keys(keyfile):
-    print()
+def read_and_print_keys(keyfile, save_as_file=False):
     pub_key = os.path.basename(keyfile).replace('.sk', '')
-    print("VALIDATOR_PUBLIC_KEY=%s" % pub_key)
     with open(keyfile) as keyfile_handler:
         priv_key = keyfile_handler.read().strip()
-    print("VALIDATOR_PRIVATE_KEY=%s" % priv_key)
-    print()
+    pub_string = "VALIDATOR_PUBLIC_KEY=%s" % pub_key
+    priv_string = "VALIDATOR_PRIVATE_KEY=%s" % priv_key
+    print('\n' + pub_string + '\n' + priv_string + '\n')
+
+    if save_as_file:
+        filename = 'rchain.validator_keys.sh'
+        with open(os.path.join(CURRENT_WORKING_DIR, filename), 'w') as file_handler:
+            content = "export %s\nexport %s\n" % (pub_string, priv_string)
+            file_handler.write(content)
+        print("Saved: %s\n" % filename)
+
+        print("You can use it with:")
+        print("$ source %s" % filename)
+        print("$ env | grep -i validator")
+        print()
 
 
-def main(data_dir=None):
+def main(save_file=False, data_dir=None):
 
     current_data_dir = choose_data_dir(data_dir)
     proc = run_process(build_command(current_data_dir))
@@ -133,9 +159,10 @@ def main(data_dir=None):
 
     signed_key_path = copy_keyfile_to_working_dir(find_keyfile(current_data_dir))
     remove_existing_data(current_data_dir)
-    read_and_print_keys(signed_key_path)
+    read_and_print_keys(signed_key_path, save_as_file=save_file)
 
 
 if __name__ == '__main__':
+    args = get_arguments()
+    main(save_file=args.save_file)
     # main(data_dir='/tmp/rnode_validator_keys')
-    main()
