@@ -10,7 +10,7 @@ MAX_LINE_COLS = 79
 NODE_BINARY = 'rnode'
 
 
-def output_reader(proc):
+def end_proc_if_genesis(proc):
 
     line_number = 0
     for line in iter(proc.stdout.readline, b''):
@@ -30,7 +30,7 @@ def output_reader(proc):
             time.sleep(0.3)
 
 
-def proc_wait(proc):
+def alert_for_longer_proc(proc):
     seconds = 0
     while True:
         seconds += 1
@@ -70,6 +70,7 @@ def choose_data_dir(data_dir):
 
 
 def build_command(data_dir, node_bin=NODE_BINARY):
+    print("Launching: %s.\n" % node_bin)
     return [
         node_bin, 'run', '--standalone',
         '--num-validators', '1',
@@ -91,19 +92,26 @@ def run_all_threads(functions, args):
         thread.join()
 
 
+def find_keyfile(current_data_dir):
+    from glob import glob
+    path_to_look = os.path.join(current_data_dir, 'genesis', '*sk')
+    files = glob(path_to_look)
+    if len(files) != 1:
+        raise FileNotFoundError("Failed to find " + path_to_look)
+    return files.pop()
+
+
 def main(data_dir=None):
 
     current_data_dir = choose_data_dir(data_dir)
     proc = run_process(build_command(current_data_dir))
-    print("RNode launched.\n")
 
     args = (proc,)
-    functions = [output_reader, proc_wait]
-    run_all_threads(functions, args)
+    run_all_threads(functions=[end_proc_if_genesis, alert_for_longer_proc], args=args)
     make_sure_process_is_closed(*args)
 
-    # current_data_dir + /genesis/*.sk
-    pass
+    original_keyfile_path = find_keyfile(current_data_dir)
+    print(original_keyfile_path)
 
 
 if __name__ == '__main__':
