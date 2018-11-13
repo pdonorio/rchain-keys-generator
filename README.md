@@ -111,7 +111,7 @@ docker run --rm -it \
 - [x] setup as package
 - [x] formatter
 - [x] docs
-- [ ] publish manually on pypi + first tag
+- [x] publish manually on pypi + first tag
 - [ ] unittests
 - [ ] travis ci
 - [ ] automatic pypi publishing from tags
