@@ -85,6 +85,14 @@ Launching: rnode.
 FileNotFoundError: [Errno 2] No such file or directory: 'rnode'
 ```
 
+2. changed data dir parameter
+
+This happened in last docker testing image. Fix is:
+
+```bash
+sed -i '79s/data_dir/data-dir/' /usr/local/lib/python3.6/dist-packages/rchain_keygen/app.py
+```
+
 
 ## development
 
