@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import shutil
 import threading
@@ -81,11 +82,30 @@ def choose_data_dir(data_dir=None):
     return data_dir
 
 
+def validate_options():
+
+    binary = RNodeOptions._BINARY_NAME
+    print('Validating binary: %s' % binary)
+
+    # get all
+    raw = subprocess.check_output([binary, '--help'])
+    output = raw.decode().replace('\n', '')
+    regex = re.compile(r'--[^\s]+')
+    all_options = regex.findall(output)
+    distinct_options = set(all_options)
+
+    # validate attributes
+    attrs = iter(RNodeOptions())
+    for attr in attrs:
+        if attr not in distinct_options:
+            print("Failing option:", attr)
+            return False
+    return True
+
+
 def build_command(data_dir):
 
-    # validate options
-
-    print("Launching: %s.\n" % RNodeOptions.BINARY_NAME)
+    print("Launching: %s.\n" % RNodeOptions._BINARY_NAME)
     return [
         # runner
         RNodeOptions.BINARY_NAME, 'run',

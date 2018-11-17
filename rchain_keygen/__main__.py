@@ -1,4 +1,5 @@
 
+import sys
 from rchain_keygen import app
 from rchain_keygen.arguments import get_arguments
 
@@ -6,6 +7,8 @@ from rchain_keygen.arguments import get_arguments
 def main():
 
     parsed_args = get_arguments()
+    if not app.validate_options():
+        sys.exit(1)
 
     ######
     data_dir = app.choose_data_dir()
