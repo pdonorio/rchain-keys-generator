@@ -16,12 +16,10 @@ def main():
     app.run_all_threads(
         functions=[app.end_proc_if_genesis, app.alert_for_longer_proc], args=args
     )
-    app.make_sure_process_is_closed(*args)
-
-    ######
-    signed_key_path = app.copy_keyfile_to_working_dir(app.find_keyfile(data_dir))
-    app.remove_existing_data(data_dir)
-    app.read_and_print_keys(signed_key_path, save_as_file=parsed_args.save_file)
+    if app.make_sure_process_is_closed(*args):
+        signed_key_path = app.copy_keyfile_to_working_dir(app.find_keyfile(data_dir))
+        app.remove_existing_data(data_dir)
+        app.read_and_print_keys(signed_key_path, save_as_file=parsed_args.save_file)
 
 
 if __name__ == '__main__':
