@@ -96,7 +96,20 @@ sed -i '79s/data_dir/data-dir/' /usr/local/lib/python3.6/dist-packages/rchain_ke
 
 ## development
 
-Black formatter:
+- implement it
+```bash
+docker-compose build --pull
+docker-compose up -d 
+docker-compose exec rchain bash
+pip3 install -e .
+rchain-keygen
+# [...]
+
+# when finished
+docker-compose down --volumes --remove-orphans
+```
+
+- `black` formatter:
 ```bash
 docker run --rm -it \
     -v (pwd):/code -w /code \
@@ -112,6 +125,7 @@ docker run --rm -it \
 - [x] formatter
 - [x] docs
 - [x] publish manually on pypi + first tag
+- [x] better options support with backwards compatibility
 - [ ] unittests
 - [ ] travis ci
 - [ ] automatic pypi publishing from tags

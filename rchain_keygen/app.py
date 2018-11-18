@@ -3,9 +3,13 @@ import time
 import shutil
 import threading
 import subprocess
-from rchain_keygen import MAX_LINE_COLS, SECONDS_TO_CHECK_PROCESS, NODE_BINARY
+from rchain_keygen import MAX_LINE_COLS, SECONDS_TO_CHECK_PROCESS, RNodeOptions
 
 CURRENT_WORKING_DIR = os.getcwd()
+
+
+def invalid_option(single_line):
+    return 'unknown option' in single_line
 
 
 def end_proc_if_genesis(proc):
@@ -15,8 +19,12 @@ def end_proc_if_genesis(proc):
         line_number += 1
         line_string = line.decode('utf-8').lower()
         line_stripped = line_string.split('[main]').pop().strip()
-        running_output = 'RUNNING (line %s): %s' % (line_number, line_stripped)
-        print(running_output[:MAX_LINE_COLS] + '\r', end='')
+
+        if invalid_option(line_stripped):
+            raise AttributeError("Failing option\n%s" % line_stripped)
+        else:
+            running_output = 'RUNNING (line %s): %s' % (line_number, line_stripped)
+            print(running_output[:MAX_LINE_COLS] + '\r', end='')
 
         if 'genesis' in line_string:
             if 'created validator' in line_string:
@@ -48,8 +56,13 @@ def make_sure_process_is_closed(proc):
         proc.wait(timeout=0.2)
         # print('Process return code: ', proc.returncode)
     except subprocess.TimeoutExpired:
-        pass
         # print('Process did not terminate in time')
+        return False
+    else:
+        if not RNodeOptions.accept_code(proc.returncode):
+            print('Process failure')
+            return False
+    return True
 
 
 def remove_existing_data(dir):
@@ -68,17 +81,19 @@ def choose_data_dir(data_dir=None):
     return data_dir
 
 
-def build_command(data_dir, node_bin=NODE_BINARY):
-    print("Launching: %s.\n" % node_bin)
-    return [
-        node_bin,
-        'run',
-        '--standalone',
-        '--num-validators',
-        '1',
-        '--data_dir',
-        data_dir,
+def build_command(data_dir):
+
+    options = RNodeOptions()
+    command = [
+        options.binary,
+        options.run,  # runner
+        options.get_option('standalone'),  # standalone mode
+        options.get_option('number_of_validators'),
+        '1',  # avoid other validators
+        options.get_option('data_directory'),
+        data_dir,  # specify data directory
     ]
+    return command
 
 
 def run_process(command):
