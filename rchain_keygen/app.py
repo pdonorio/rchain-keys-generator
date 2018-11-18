@@ -82,40 +82,32 @@ def choose_data_dir(data_dir=None):
     return data_dir
 
 
-def validate_options():
-
-    binary = RNodeOptions._BINARY_NAME
-    print('Validating binary: %s' % binary)
-
-    # get all
-    raw = subprocess.check_output([binary, '--help'])
-    output = raw.decode().replace('\n', '')
-    regex = re.compile(r'--[^\s]+')
-    all_options = regex.findall(output)
-    distinct_options = set(all_options)
-
-    # validate attributes
-    attrs = iter(RNodeOptions())
-    for attr in attrs:
-        if attr not in distinct_options:
-            print("Failing option:", attr)
-            return False
-    return True
-
-
 def build_command(data_dir):
+    options = RNodeOptions()
+    exit()
 
-    print("Launching: %s.\n" % RNodeOptions._BINARY_NAME)
-    return [
+    # # validate attributes
+    # attrs = iter(RNodeOptions())
+    # for attr in attrs:
+    #     if attr not in distinct_options:
+    #         print("Failing option:", attr)
+    #         return False
+    # return True
+
+    command = [
         # runner
-        RNodeOptions.BINARY_NAME, 'run',
-        # mode standalone
-        RNodeOptions.STANDALONE,
-        # self validating
-        RNodeOptions.NUMBER_OF_VALIDATORS, '1',
-        # specify data directory
-        RNodeOptions.DATA_DIRECTORY, data_dir,
+        options.binary, 'run',
+        # # standalone mode
+        # options.STANDALONE,
+        # # self validating
+        # options.NUMBER_OF_VALIDATORS, '1',
+        # # specify data directory
+        # options.DATA_DIRECTORY, data_dir,
     ]
+    print("Process creation")
+    print(command)
+    exit()
+    return command
 
 
 def run_process(command):

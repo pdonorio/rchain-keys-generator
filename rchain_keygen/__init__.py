@@ -7,23 +7,44 @@ MAX_LINE_COLS = 79
 
 
 class RNodeOptions:
-    _BINARY_NAME = 'rnode'
-    STANDALONE = '--standalone'
-    NUMBER_OF_VALIDATORS = '--num-validators'
-    DATA_DIRECTORY = '--data_dir'
+
+    _binary_name = 'rnode'
+    _options = {
+        'standalone': "standalone",
+        'number_of_validators': "num_validators",
+        'data_directory': "data_dir",
+        'help': "help",
+    }
 
     def __init__(self):
-        self._idx = 0
-        self._attrs = [element for element in dir(self) if not element.startswith('_')]
+        print("TEST")
+        pass
 
-    def __iter__(self):
-        return self
+    @property
+    def binary(self):
+        return self._binary_name
 
-    def __next__(self):
-        try:
-            item_name = self._attrs[self._idx]
-        except IndexError:
-            raise StopIteration()
+    def fix_option(self, name):
+        if name not in self._options:
+            return False
         else:
-            self._idx += 1
-            return getattr(self, item_name)
+            self._options[name] = self._options[name].replace('_', '-')
+            return True
+
+    def get_option(self, name):
+        if name not in self._options:
+            return None
+        return '--' + self._options.get(name)
+
+    def get_set_of_current_options(self):
+        import re
+        import subprocess
+        raw = subprocess.check_output([self.binary, self.get_option('help')])
+        output = raw.decode().replace('\n', '')
+        regex = re.compile(r'--[^\s]+')
+        all_options = regex.findall(output)
+        self._all_options_set = set(all_options)
+
+    def validate_options():
+        print('Validating')
+        pass
