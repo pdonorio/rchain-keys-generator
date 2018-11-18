@@ -1,5 +1,4 @@
 import os
-import re
 import time
 import shutil
 import threading
@@ -60,8 +59,8 @@ def make_sure_process_is_closed(proc):
         # print('Process did not terminate in time')
         return False
     else:
-        if proc.returncode != 0:
-            print(RNodeOptions.BINARY_NAME + ' failure')
+        if not RNodeOptions.accept_code(proc.returncode):
+            print('Process failure')
             return False
     return True
 
@@ -83,30 +82,14 @@ def choose_data_dir(data_dir=None):
 
 
 def build_command(data_dir):
+
     options = RNodeOptions()
-    exit()
-
-    # # validate attributes
-    # attrs = iter(RNodeOptions())
-    # for attr in attrs:
-    #     if attr not in distinct_options:
-    #         print("Failing option:", attr)
-    #         return False
-    # return True
-
     command = [
-        # runner
-        options.binary, 'run',
-        # # standalone mode
-        # options.STANDALONE,
-        # # self validating
-        # options.NUMBER_OF_VALIDATORS, '1',
-        # # specify data directory
-        # options.DATA_DIRECTORY, data_dir,
+        options.binary, options.run,                        # runner
+        options.get_option('standalone'),                   # standalone mode
+        options.get_option('number_of_validators'), '1',    # avoid other validators
+        options.get_option('data_directory'), data_dir,     # specify data directory
     ]
-    print("Process creation")
-    print(command)
-    exit()
     return command
 
 

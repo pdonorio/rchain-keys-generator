@@ -125,7 +125,7 @@ docker run --rm -it \
 - [x] formatter
 - [x] docs
 - [x] publish manually on pypi + first tag
-- [ ] better options support
+- [x] better options support with backwards compatibility
 - [ ] unittests
 - [ ] travis ci
 - [ ] automatic pypi publishing from tags
