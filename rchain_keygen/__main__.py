@@ -1,4 +1,3 @@
-
 from rchain_keygen import app
 from rchain_keygen.arguments import get_arguments
 

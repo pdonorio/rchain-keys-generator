@@ -1,9 +1,7 @@
-
 import re
 import subprocess
 
-__version__ = '0.0.1'
-# __version__ = '0.0.2'
+__version__ = '0.0.2'
 
 SECONDS_TO_CHECK_PROCESS = 30
 MAX_LINE_COLS = 79
@@ -11,10 +9,7 @@ MAX_LINE_COLS = 79
 
 class RNodeOptions:
 
-    _codes = {
-        'valid': 0,
-        'interrupted': 143,
-    }
+    _codes = {'valid': 0, 'interrupted': 143}
     _binary_name = 'rnode'
     _run_command = 'run'
     _options = {
@@ -38,9 +33,9 @@ class RNodeOptions:
 
     @classmethod
     def accept_code(cls, return_code):
-        return \
-            return_code == cls.get_code('valid') \
-            or return_code == cls.get_code('interrupted')
+        return return_code == cls.get_code('valid') or return_code == cls.get_code(
+            'interrupted'
+        )
 
     @classmethod
     def get_code(cls, name):

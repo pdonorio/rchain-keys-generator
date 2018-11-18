@@ -6,8 +6,8 @@ services:
     build:
       context: ./rnode
       args:
-        # image_tag: release-rnode-v${RNODE_RELEASE}
-        image_tag: testing
+        image_tag: release-rnode-v${RNODE_RELEASE}
+        # image_tag: ${RNODE_TAG}
     volumes:
       - .:/app
     working_dir: /app

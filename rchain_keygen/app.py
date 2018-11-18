@@ -85,10 +85,13 @@ def build_command(data_dir):
 
     options = RNodeOptions()
     command = [
-        options.binary, options.run,                        # runner
-        options.get_option('standalone'),                   # standalone mode
-        options.get_option('number_of_validators'), '1',    # avoid other validators
-        options.get_option('data_directory'), data_dir,     # specify data directory
+        options.binary,
+        options.run,  # runner
+        options.get_option('standalone'),  # standalone mode
+        options.get_option('number_of_validators'),
+        '1',  # avoid other validators
+        options.get_option('data_directory'),
+        data_dir,  # specify data directory
     ]
     return command
 
