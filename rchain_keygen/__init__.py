@@ -62,7 +62,7 @@ class RNodeOptions:
         print('Validating')
         validated_options = {}
         for name, value in self._options.items():
-            if value not in self._all_options_set:
+            if self.get_option(name) not in self._all_options_set:
                 # backwards compatibility
                 value = value.replace('_', '-')
             validated_options[name] = value
