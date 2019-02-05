@@ -6,31 +6,21 @@ from rchain_keygen import \
     __version__ as current_version
 
 app = '%s.__main__:main' % main_package
-# print(main_package, current_version)
 
 setup(
     name=main_package,
     version=current_version,
     author="Paolo D'Onorio De Meo",
     author_email='paolo@proofmedia.io',
-    description='Do development and deploy with the RAPyDo framework',
+    description='Python helper to generate new private/public keys pair to run RChain node as validator',
     license='MIT',
     packages=[main_package],
     python_requires='>=3.5.1',
     entry_points={
         'console_scripts': [
             'rchain-keygen=%s' % app,
-            # 'do=%s' % app,
         ],
     },
-    # install_requires=[
-    #     "jinja2",
-    # ],
-    # package_data={
-    #     main_package: [
-    #         'file.yaml',
-    #     ],
-    # },
     url='https://pdonorio.github.io/rchain-keys-generator',
     keywords=['rchain', 'blockchain', 'keypairs', 'generator'],
     classifiers=[
